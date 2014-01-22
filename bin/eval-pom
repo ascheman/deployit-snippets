@@ -1,0 +1,12 @@
+#!/usr/bin/env groovy
+ 
+// TODO: Check out a real POM parser to make sure it works for parameters inherited from parent POMs etc.
+def root = new XmlParser().parse(new File("pom.xml"))
+def groupId = root.groupId.text()
+def artifactId = root.artifactId.text()
+def version = root.version.text()
+ 
+print """MAVEN_GROUPID=$groupId
+MAVEN_ARTIFACTID=$artifactId
+MAVEN_VERSION=$version
+"""
