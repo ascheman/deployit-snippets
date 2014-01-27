@@ -11,3 +11,9 @@ The default DeployIt CLI (shell) startup script has two drawbacks:
 - It performs a "cd" (Change Directory) command internally and therefor cannot handle relative paths, for, e.g., Jython scripts which should be executed on the server side.
 
 The version in "bin/deployit-cli.sh" circumvents these two problems.
+
+Eval-POM
+---------
+
+The script _bin/eval-pom_ just provides a small helper to derive Maven 
+POM parameters into the current environment.
