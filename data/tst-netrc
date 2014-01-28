@@ -1,0 +1,9 @@
+machine xxx
+username abc
+password def
+machine tst
+username heinz
+password geheim
+machine yyy
+username 123
+password 456

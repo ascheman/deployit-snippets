@@ -25,10 +25,3 @@ get_user_and_pass_from_file () {
     done
 }
 
-# Usage/Test:
-# declare username_password=`get_user_and_pass_from_file $HOME/.deployit.netrc tst`
-# username=`echo $username_password | awk '{print $1}'`
-# password=`echo $username_password | awk '{print $2}'`
-# echo "User: '$username'"
-# echo "Pass: '$password'"
-
