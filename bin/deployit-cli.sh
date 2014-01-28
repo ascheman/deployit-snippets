@@ -61,49 +61,13 @@ do
     esac
 done
 
-# Try to determine username and password from $DEPLOYIT_CLI_NETRC
-username=''
-password=''
-server='localhost'
+# Try to determine additional parameters from $DEPLOYIT_CLI_RC and $DEPLOYIT_CLI_ENV
+: ${DEPLOYIT_CLI_RC:="$HOME/.deployitrc"}
 
-declare options=""
-# username_set=false
-# password_set=false
-while [ "$#" -gt 0 ]
-do
-    opt=$1
-    shift
-    if test "$opt" == "-username"
-       then username=$1
-            shift
-    elif test "$opt" == "-password"
-       then password=$1
-            shift 
-    elif test "$opt" == "-host"
-       then servername=$1
-            shift
-       else options="$options $opt"
-    fi
-done
-
-if test "$DEPLOYIT_CLI_NETRC" -a \
-    -r "$DEPLOYIT_CLI_NETRC" \
-    -a \( ! "$username" -o ! "$password" \)
-   then declare username_password=`get_user_and_pass_from_file $DEPLOYIT_CLI_NETRC $servername`
-        test "$username" || username=`echo $username_password | awk '{print $1}'`
-        test "$password" || password=`echo $username_password | awk '{print $2}'`
+# Default params from RC file is empty
+declare environment_params=''
+if [ -n "${DEPLOYIT_CLI_ENV}" -a -n "${DEPLOYIT_CLI_RC}" -a -r "${DEPLOYIT_CLI_RC}" ]
+   then environment_params=`get_environment_from_file ${DEPLOYIT_CLI_RC} ${DEPLOYIT_CLI_ENV}`
 fi
-test "$username" && options="$options -username $username"
-test "$password" && options="$options -password $password"
-test "$servername" && options="$options -host $servername"
 
-# if eval $username_set
-#    then :
-#    else test "$username" && options="$options -username $username"
-# fi
-# if eval $password_set
-#    then :
-#    else test "$password" && options="$options -password $password"
-# fi
-
-exec $javacmd ${DEPLOYIT_CLI_OPTS} -classpath "${deployit_cli_classpath}" com.xebialabs.deployit.cli.Cli $options
+exec $javacmd ${DEPLOYIT_CLI_OPTS} -classpath "${deployit_cli_classpath}" com.xebialabs.deployit.cli.Cli ${environment_params} "$@"

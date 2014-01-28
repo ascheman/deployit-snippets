@@ -12,12 +12,20 @@ The default DeployIt CLI (shell) startup script has two drawbacks:
 
 The version in "bin/deployit-cli.sh" circumvents these two problems.
 
-Additionally the extended cli tries to read a .netrc (see ftp(1)) like configuration with a machine/username/password triple to determine the application credentials.
-The file is configured via the DEPLOYIT_CLI_NETRC environment variable. Make sure it has a strict list of
- machine xxx
- username yyy
- password zzz
-triples! Despite standard ftp client .netrc a default section is prohibited!
+Additionally the extended cli tries to read a $HOME/.deployitrc. It works like a Windows INI file, i.e., it is divided into sections for different DeployIt environments, each starting with a '[$environment]' line.
+The file is configured via the DEPLOYIT_CLI_RC environment variable. 
+Make sure it has some lists of the form
+
+ [xxx]
+ username abc
+ password def
+ server ghi
+ ...
+ [yyy]
+ ...
+
+with name/value parameters for each environment!
+The particular environment is select from the DEPLOYIT_CLI_ENV environment variable.
 
 Eval-POM
 ---------
