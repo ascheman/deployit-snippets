@@ -33,7 +33,7 @@ if test -n "${JAVA_HOME}"
 fi
 
 # Compute the Operating System
-: ${SYS_OS:=`(uname -o 2>/dev/null || uname -s) | tr [A-Z] [a-z]`}
+: ${SYS_OS:=`(uname -o 2>/dev/null || uname -s) | tr [:upper:] [:lower:]`}
 
 test -z "${SYS_OS}" && die "Operating System cannot be determined!"
 
