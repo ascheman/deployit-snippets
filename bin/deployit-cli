@@ -21,9 +21,11 @@ test ! -d "${DEPLOYIT_CLI_HOME}" && die "The Deployit CLI Home directory '${DEPL
 # Set some global variables for current program and directory
 prog=`basename $0`
 dir=`dirname $0`
+snippets_home="$dir/.."
+snippets_lib="$snippets_home/lib"
 
-if test -d "$dir/../lib" -a -r "$dir/../lib/shellfunctions.sh"
-   then source "$dir/../lib/shellfunctions.sh"
+if test -d "$snippets_lib" -a -r "$snippets_lib/shellfunctions.sh"
+   then source "$snippets_lib/shellfunctions.sh"
 fi
 
 # Remember: Shell variables (in opposite to ENVIRONMENT variables) are written in small letters!
@@ -37,13 +39,17 @@ fi
 
 test -z "${SYS_OS}" && die "Operating System cannot be determined!"
 
-# Compute the path delimiter!
+# Compute the initial class path and extend Jython Path for modules!
 case "${SYS_OS}" in 
     cygwin*)    deployit_cli_classpath=`cygpath -w $DEPLOYIT_CLI_HOME/conf`
+                jythonlibdir=`cygpath -w "$snippets_lib"`
+                JYTHONPATH="$JYTHONPATH;$jythonlibdir"
         ;;
     * )         deployit_cli_classpath="$DEPLOYIT_CLI_HOME/conf"
+                JYTHONPATH="$JYTHONPATH:$snippets_lib"
         ;;
 esac
+export JYTHONPATH
 
 # Build the DeployIt Class Path from the contents from the CLI Home, but with absolute path names!
 
