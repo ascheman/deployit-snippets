@@ -7,7 +7,7 @@ import getopt
 from tools import trace
 
 def usage(progName, exitCode):
-    print "usage: " + progName + " -h | application"
+    print "usage: " + progName + " -h | darfile"
     sys.exit(exitCode)
     	
 def main(argv):    	
