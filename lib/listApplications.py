@@ -46,6 +46,7 @@ def main(argv):
     for appName in sorted(apps.keys()):
         print appName
         
+# The usual way to start main does not work, obviously the script is embedded somehow?
 # if __name__ == "__main__":
 trace ("Calling main(" + str(sys.argv) + ")")
 main(sys.argv)

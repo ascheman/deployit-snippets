@@ -53,6 +53,7 @@ def main(argv):
     	trace ("Fixing the dar name from '%s' to '%s'" % (darSourcePath, darTargetPath))
         os.rename (darSourcePath, darTargetPath)
         
+# The usual way to start main does not work, obviously the script is embedded somehow?
 # if __name__ == "__main__":
 trace ("Calling main(" + str(sys.argv) + ")")
 main(sys.argv)

@@ -25,6 +25,7 @@ def main(argv):
     trace ("Importing application '%s' from file '%s'" % (application, filePath))
     deployit.importPackage(filePath)
         
+# The usual way to start main does not work, obviously the script is embedded somehow?
 # if __name__ == "__main__":
 trace ("Calling main(" + str(sys.argv) + ")")
 main(sys.argv)
