@@ -7,7 +7,7 @@ import getopt
 from tools import *
 
 def usage(progName, exitCode, message = None):
-    usage = "usage: " + progName + " -h | [ -t targetDir ] { -a includePattern [ -x excludePattern ] | [ -p ] application+ }"
+    usage = "usage: " + progName + " -h | [ -f ] [ -n ] [ -t targetDir ] { -a includePattern [ -x excludePattern ] | [ -p ] application+ }"
     if message:
     	print >> sys.stderr, message
     if exitCode > 0:
@@ -17,21 +17,27 @@ def usage(progName, exitCode, message = None):
     sys.exit(exitCode)
     	
 def main(argv):    	
-    opts, args = getopt.getopt(sys.argv[1:], "ha:pt:x:")
+    opts, args = getopt.getopt(sys.argv[1:], "ha:fnpt:x:")
     # List version numbers (long listing) also
     targetDir = ""
+    forceOverwrite = 0
+    dryRun = 0
     preservePath = 0
     includePattern = None
     excludePattern = None
     for opt, arg in opts:
     	if opt == "-h":
     	    usage(argv[0], 0)
-        elif opt == "-t":
-            targetDir = arg
-        elif opt == "-p":
-            preservePath = 1
         elif opt == "-a":
             includePattern = arg
+        elif opt == "-f":
+            forceOverwrite = 1
+        elif opt == "-n":
+            dryRun = 1
+        elif opt == "-p":
+            preservePath = 1
+        elif opt == "-t":
+            targetDir = arg
         elif opt == "-x":
             excludePattern = arg
     
@@ -51,7 +57,7 @@ def main(argv):
     	
     for application in applications:
     	trace ("Exporting '%s'" % application)
-    	exportApplication(repository, application, targetDir, preservePath)
+    	exportApplication(repository, application, targetDir, forceOverwrite, dryRun, preservePath)
     	      
 # The usual way to start main does not work, obviously the script is embedded somehow?
 # if __name__ == "__main__":
