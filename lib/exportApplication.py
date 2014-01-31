@@ -4,17 +4,25 @@ import os
 
 import getopt
 
-from tools import trace
+from tools import *
 
-def usage(progName, exitCode):
-    print "usage: " + progName + " -h | [ -t targetDir ] [ -p ] application"
+def usage(progName, exitCode, message = None):
+    usage = "usage: " + progName + " -h | [ -t targetDir ] { -a includePattern [ -x excludePattern ] | [ -p ] application+ }"
+    if message:
+    	print >> sys.stderr, message
+    if exitCode > 0:
+    	print >> sys.stderr, usage
+    else:
+        print (usage) 
     sys.exit(exitCode)
     	
 def main(argv):    	
-    opts, args = getopt.getopt(sys.argv[1:], "hpt:")
+    opts, args = getopt.getopt(sys.argv[1:], "ha:pt:x:")
     # List version numbers (long listing) also
     targetDir = ""
     preservePath = 0
+    includePattern = None
+    excludePattern = None
     for opt, arg in opts:
     	if opt == "-h":
     	    usage(argv[0], 0)
@@ -22,37 +30,29 @@ def main(argv):
             targetDir = arg
         elif opt == "-p":
             preservePath = 1
-       
-    if len(args) != 1:
-        usage(argv[0], 1)
-    application = args[0]
-
-    if targetDir != "":
-    	if targetDir[-1] != "/" and targetDir[-1] != os.pathsep:
-    	    trace ("Prepending path separator to target path")
-            targetDir += "/"
-    else:
-        trace ("Using current dir as target dir") 
-        targetDir = "./"
-    if preservePath:
-    	targetDir += os.path.dirname (application)
-    trace ("Exporting application '" + application + "' to target directory '" + targetDir + "'")
-    pathes=repository.exportDar(targetDir, application)
-    if preservePath:
-        # Fix the exportDar output name, eg. 
-        #   it is dumped as Applications/xxx/yyy/<appName>/<appName>-<appVersion>.dar
-        #   but the name should be Applications/xxx/yyy/<appName>/<appVersion>.dar
-    	appVersion = os.path.basename(application)
-    	dirName = os.path.dirname(application)
-    	appName = os.path.basename(dirName)
-    	darName = appName + "-" + appVersion + ".dar"
-    	# This is the current path of the dar file
-    	darSourcePath = dirName + "/" + darName
-    	# This is the final target path of the dar file
-    	darTargetPath = dirName + "/" + appVersion + ".dar"
-    	trace ("Fixing the dar name from '%s' to '%s'" % (darSourcePath, darTargetPath))
-        os.rename (darSourcePath, darTargetPath)
-        
+        elif opt == "-a":
+            includePattern = arg
+        elif opt == "-x":
+            excludePattern = arg
+    
+    applications = args
+    if includePattern:
+    	if len(args) != 0:
+    	    usage(argv[0], 1, "Option '-a' and a list of applications is mutually exclusive")
+    	elif preservePath:
+    	    usage(argv[0], 1, "Options '-a' and '-p' are mutually exclusive")
+    	    
+    	preservePath = 1
+        applications = listApplications (repository, 1, includePattern, excludePattern)
+    elif excludePattern:
+    	usage(argv[0], 1, "Option '-x' must not be used without '-a'")
+    elif len(args) == 0:
+    	usage(argv[0], 1, "Please specify either one or more application(s) or a search pattern with '-a'")
+    	
+    for application in applications:
+    	trace ("Exporting '%s'" % application)
+    	exportApplication(repository, application, targetDir, preservePath)
+    	      
 # The usual way to start main does not work, obviously the script is embedded somehow?
 # if __name__ == "__main__":
 trace ("Calling main(" + str(sys.argv) + ")")
