@@ -6,24 +6,45 @@ import getopt
 
 from tools import trace
 
-def usage(progName, exitCode):
-    print "usage: " + progName + " -h | darfile"
+def usage(progName, exitCode, message = None):
+    usage = "usage: " + progName + " -h | [ -n ] darfile+"
+    if message:
+        print >> sys.stderr, message
+    if exitCode > 0:
+        print >> sys.stderr, usage
+    else:
+        print (usage) 
     sys.exit(exitCode)
     	
 def main(argv):    	
-    opts, args = getopt.getopt(sys.argv[1:], "h")
-    # List version numbers (long listing) also
+    opts, args = getopt.getopt(argv[1:], "hn")
+    dryRun = 0
     for opt, arg in opts:
     	if opt == "-h":
     	    usage(argv[0], 0)
+    	elif opt == "-n":
+    	    dryRun = 1
        
-    if len(args) != 1:
+    if len(args) < 1:
         usage(argv[0], 1)
-    application = args[0]
 
-    filePath = os.path.join (os.path.realpath("."), application) 
-    trace ("Importing application '%s' from file '%s'" % (application, filePath))
-    deployit.importPackage(filePath)
+    for applicationFile in args:
+    	if not os.path.exists(applicationFile):
+    	    print >> sys.stderr, "Application file '%s' does not exists!" % applicationFile
+    	    continue
+    	applicationName = applicationFile[0:-4]
+        filePath = os.path.join (os.path.realpath("."), applicationFile) 
+    	importMsg = "Importing application '%s' from file '%s'" % (applicationName, filePath)
+    	if repository.exists(applicationName):
+    	    print ("Application '%s' already exists - skipped" % applicationName)
+    	elif dryRun:
+    	    print (importMsg + " - skipped (DryRun!)")
+    	else:
+            print (importMsg)
+            try:
+                deployit.importPackage(filePath)
+            except:
+                print >> sys.stderr, "Could not import DAR from '%s'" % applicationFile
         
 # The usual way to start main does not work, obviously the script is embedded somehow?
 # if __name__ == "__main__":
