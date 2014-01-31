@@ -6,7 +6,7 @@ import getopt
 from tools import *
 
 def usage(progName, exitCode):
-    print "usage: " + progName + " -h | [-l] [searchRegex]"
+    print "usage: " + progName + " -h | [-l] [-x excludeRegex] [includeRegex]"
     sys.exit(exitCode)
     	
 def main(argv):    	

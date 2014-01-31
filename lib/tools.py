@@ -11,7 +11,7 @@ def listApplications(repository, listLong = 0, searchPattern = None, excludePatt
     pathes=repository.search('udm.DeploymentPackage')
     
     trace ("Including pathes with pattern '%s', excluding '%s'" % (searchPattern, excludePattern))
-    # Exclude unwanted patterns
+    # Exclude unwanted pathes
     if excludePattern:
     	filteredPathes = []
     	for path in pathes:
