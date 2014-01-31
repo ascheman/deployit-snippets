@@ -46,7 +46,7 @@ excludePattern=""
 sourceEnv=""
 targetEnv=""
 
-fetchCmdString=""
+fetchOptions=""
 
 while getopts "ha:x:s:t:w:n" opt
 do
@@ -77,7 +77,7 @@ test -z "$targetEnv"        && usage 1 "-t must be specified!"
 cd $workDir
 
 export DEPLOYIT_CLI_ENV=$sourceEnv 
-$snippets_bin/deployit-cli -f $snippets_lib/exportApplications.py -- -a $includePattern 
+$snippets_bin/deployit-cli -f $snippets_lib/exportApplications.py -- -a $includePattern $fetchOptions
 
 export DEPLOYIT_CLI_ENV=$targetEnv
 find * -name '*.dar' | xargs $snippets_bin/deployit-cli -f $snippets_lib/importApplications.py
