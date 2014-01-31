@@ -1,0 +1,83 @@
+#!/bin/bash
+
+# Abort if an error occurs
+set -e
+
+# Use the DEPLOYIT_CLI_HOME environment variable / or suitable default otherwise
+# This might even be a symbolic link to the correct destination!
+: ${DEPLOYIT_CLI_HOME:="/opt/deployit/cli-current"}
+
+die () {
+     msg=$1
+     shift
+     echo "$1" >&2
+     exit 1
+}
+
+# Abort if the CLI Home does not exist
+test ! -d "${DEPLOYIT_CLI_HOME}" && die "The Deployit CLI Home directory '${DEPLOYIT_CLI_HOME}' does not exist!"
+# Export it for the sake of sub processes
+export DEPLOYIT_CLI_HOME
+
+# Set some global variables for current program and directory
+prog=`basename $0`
+dir=`dirname $0`
+snippets_home="$dir/.."
+snippets_bin="$snippets_home/bin"
+snippets_lib="$snippets_home/lib"
+
+if test -d "$snippets_lib" -a -r "$snippets_lib/shellfunctions.sh"
+   then source "$snippets_lib/shellfunctions.sh"
+fi
+
+usage () {
+    local exitCode=$1
+    shift
+    if test $# -gt 0
+       then echo "$@" >&2
+    fi
+    echo "usage: $prog -h | -w workDir -a includePattern [ -x excludePattern ] -s sourceEnv -t targetEnv" >&2
+    exit $exitCode
+}
+
+workDir=""
+includePattern=""
+excludePattern=""
+sourceEnv=""
+targetEnv=""
+
+fetchCmdString=""
+
+while getopts "ha:x:s:t:w:n" opt
+do
+    case $opt in
+        h)  usage 0
+            ;;
+        w)  workDir=$OPTARG
+            ;;
+        a)  includePattern=$OPTARG
+            ;;
+        x)  excludePattern=$OPTARG
+            fetchOptions="-x $excludePattern"
+            ;;
+        s)  sourceEnv=$OPTARG
+            ;;
+        t)  targetEnv=$OPTARG
+            ;;
+        \?) usage 1 "Invalid option: -$OPTARG"
+            ;;
+    esac
+done
+
+test -z "$includePattern"   && usage 1 "-a must be specified!"
+test -z "$workDir"          && usage 1 "-w must be specified!"
+test -z "$sourceEnv"        && usage 1 "-s must be specified!"
+test -z "$targetEnv"        && usage 1 "-t must be specified!"
+
+cd $workDir
+
+export DEPLOYIT_CLI_ENV=$sourceEnv 
+$snippets_bin/deployit-cli -f $snippets_lib/exportApplications.py -- -a $includePattern 
+
+export DEPLOYIT_CLI_ENV=$targetEnv
+find * -name '*.dar' | xargs $snippets_bin/deployit-cli -f $snippets_lib/importApplications.py
