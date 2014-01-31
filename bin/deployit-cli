@@ -6,7 +6,6 @@ set -e
 # Use the DEPLOYIT_CLI_HOME environment variable / or suitable default otherwise
 # This might even be a symbolic link to the correct destination!
 : ${DEPLOYIT_CLI_HOME:="/opt/deployit/cli-current"}
-# Export it for the sake of sub processes
 
 die () {
      msg=$1
@@ -17,6 +16,8 @@ die () {
 
 # Abort if the CLI Home does not exist
 test ! -d "${DEPLOYIT_CLI_HOME}" && die "The Deployit CLI Home directory '${DEPLOYIT_CLI_HOME}' does not exist!"
+# Export it for the sake of sub processes
+export DEPLOYIT_CLI_HOME
 
 # Set some global variables for current program and directory
 prog=`basename $0`
