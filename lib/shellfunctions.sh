@@ -1,34 +1,34 @@
 
 # TODO: Check how to return an array to the caller!
-get_user_and_pass_from_file () {
+get_environment_from_file () {
+    # The parameters
     local file=$1
-    local server=$2
+    local environment=$2
 
-    local machine_found=false
+    # Some constants
+    local comment_re="^\s*\#.*"
+    local emptyline_re="^\s*$"
+    local other_environment_re="^\[.*\]$"
+    
+    local environment_found=false
     cat $file | while read line
     do
-        server_re="^\\s*machine\\s+$server$"
-        other_server_re="^\\s*machine\\s+"
-        if echo $line | egrep "$server_re" >/dev/null
-	   then machine_found=true
-	elif echo $line | egrep "$other_server_re" >/dev/null
-	   then machine_found=false
-	elif eval $machine_found
-	   then username_re="^\\s*username\\s+"
-	        password_re="^\\s*password\\s+"
-		if echo $line | egrep "$username_re" >/dev/null
-		   then echo -n $line | awk '{print $2}'; echo " "
-		elif echo $line | egrep "$password_re" >/dev/null
-		   then echo -n $line | awk '{print $2}'
-		fi
-	fi
+        
+        environment_re="^\[$environment\]$"
+         
+        if echo $line | egrep "$comment_re" >/dev/null
+           then continue
+        elif echo $line | egrep "$emptyline_re" >/dev/null
+           then continue
+        elif echo $line | egrep "$environment_re" >/dev/null
+	       then environment_found=true
+	    elif eval $environment_found
+	       then if echo $line | egrep "$other_environment_re" >/dev/null
+                   then environment_found=false
+	               else echo -n " -$line"
+	            fi
+	    fi
     done
 }
 
-# Usage/Test:
-# declare username_password=`get_user_and_pass_from_file $HOME/.deployit.netrc tst`
-# username=`echo $username_password | awk '{print $1}'`
-# password=`echo $username_password | awk '{print $2}'`
-# echo "User: '$username'"
-# echo "Pass: '$password'"
 

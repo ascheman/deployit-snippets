@@ -1,1 +1,4 @@
 .project
+*.class
+*.dar
+*.pyc
