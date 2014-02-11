@@ -1,0 +1,22 @@
+#!/usr/bin/env groovy
+
+def extension = args[0]
+def filename = args[1]
+
+if (!filename.endsWith(extension)) {
+    System.err.println ("File name '${filename}' does not end with '${extension}'")
+    System.exit(1)
+}
+// Extensions starting with a dash, ie., classifiers, usually do not have a point before ...
+if (!extension.startsWith("-")) {
+    extension = ".${extension}"
+}
+def versionFinder = (filename =~ /-(\d+.+)($extension)$/)
+def versionAndExtensionFinder = (filename =~ /(-\d+.+)$/)
+
+def version = versionFinder[0][1]
+def applicationName = filename - versionAndExtensionFinder[0][1]
+print """APPLICATION_VERSION=${version}
+APPLICATION_NAME=${applicationName}
+APPLICATION_FILE=${filename}
+"""
