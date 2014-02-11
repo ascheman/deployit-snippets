@@ -14,6 +14,11 @@ die () {
      exit 1
 }
 
+# Compute the Operating System
+: ${SYS_OS:=`(uname -o 2>/dev/null || uname -s) | tr [:upper:] [:lower:]`}
+
+test -z "${SYS_OS}" && die "Operating System cannot be determined!"
+
 # Abort if the CLI Home does not exist
 test ! -d "${DEPLOYIT_CLI_HOME}" && die "The Deployit CLI Home directory '${DEPLOYIT_CLI_HOME}' does not exist!"
 # Export it for the sake of sub processes
@@ -22,9 +27,19 @@ export DEPLOYIT_CLI_HOME
 # Set some global variables for current program and directory
 prog=`basename $0`
 dir=`dirname $0`
-snippets_home="$dir/.."
-snippets_bin="$snippets_home/bin"
-snippets_lib="$snippets_home/lib"
+
+# Compute the pathes when running under cygwin
+case "${SYS_OS}" in 
+    cygwin*)    snippets_home=`cygpath -w "$dir/.."`
+                snippets_bin=`cygpath -w "$snippets_home/bin"`
+                snippets_lib=`cygpath -w "$snippets_home/lib"`
+        ;;
+    * )         snippets_home="$dir/.."
+                snippets_bin="$snippets_home/bin"
+                snippets_lib="$snippets_home/lib"
+    
+        ;;
+esac
 
 if test -d "$snippets_lib" -a -r "$snippets_lib/shellfunctions.sh"
    then source "$snippets_lib/shellfunctions.sh"
