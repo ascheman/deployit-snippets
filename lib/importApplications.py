@@ -4,6 +4,13 @@ import os
 
 import getopt
 
+### TODO it is somehow not possible to import the thrown Java exception to perform a proper error handling!
+
+# import com.xebialabs.deployit.service.importer.ImporterException
+# sys.add_package('com.xebialabs.deployit.service.importer')
+# from com.xebialabs.deployit.service.importer import ImporterException
+# import ImporterException
+
 from tools import trace
 
 def usage(progName, exitCode, message = None):
@@ -43,8 +50,11 @@ def main(argv):
             print (importMsg)
             try:
                 deployit.importPackage(filePath)
+# Check out the TODO in the import section!
+#            except ImporterException, e:
+#                print >> sys.stderr, "Could not import DAR from '%s': '%s'" % (applicationFile, e.strerror)
             except:
-                print >> sys.stderr, "Could not import DAR from '%s'" % applicationFile
+                print >> sys.stderr, "Could not import DAR from '%s'!" % (applicationFile)
         
 # The usual way to start main does not work, obviously the script is embedded somehow?
 # if __name__ == "__main__":
