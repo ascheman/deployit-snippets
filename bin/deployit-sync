@@ -89,6 +89,7 @@ test -z "$workDir"          && usage 1 "-w must be specified!"
 test -z "$sourceEnv"        && usage 1 "-s must be specified!"
 test -z "$targetEnv"        && usage 1 "-t must be specified!"
 
+mkdir -p $workDir
 cd $workDir
 
 export DEPLOYIT_CLI_ENV=$sourceEnv 
