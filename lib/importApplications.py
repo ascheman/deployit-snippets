@@ -14,7 +14,7 @@ import getopt
 from tools import trace
 
 def usage(progName, exitCode, message = None):
-    usage = "usage: " + progName + " -h | [ -n ] darfile+"
+    usage = "usage: " + progName + " -h | [ -n ] [ -s ] darfile+"
     if message:
         print >> sys.stderr, message
     if exitCode > 0:
@@ -24,13 +24,16 @@ def usage(progName, exitCode, message = None):
     sys.exit(exitCode)
     	
 def main(argv):    	
-    opts, args = getopt.getopt(argv[1:], "hn")
+    opts, args = getopt.getopt(argv[1:], "hns")
     dryRun = 0
+    skipError = 0
     for opt, arg in opts:
     	if opt == "-h":
     	    usage(argv[0], 0)
     	elif opt == "-n":
     	    dryRun = 1
+        elif opt == "-s":
+            skipError = 1
        
     if len(args) < 1:
         usage(argv[0], 1)
@@ -55,6 +58,8 @@ def main(argv):
 #                print >> sys.stderr, "Could not import DAR from '%s': '%s'" % (applicationFile, e.strerror)
             except:
                 print >> sys.stderr, "Could not import DAR from '%s'!" % (applicationFile)
+                if not skipError:
+                    sys.exit(2)
         
 # The usual way to start main does not work, obviously the script is embedded somehow?
 # if __name__ == "__main__":
