@@ -13,17 +13,16 @@ get_environment_from_file () {
     local environment_found=false
     cat $file | while read line
     do
-        
         environment_re="^\[$environment\]$"
          
-        if echo $line | egrep "$comment_re" >/dev/null
+        if echo "$line" | egrep "$comment_re" >/dev/null
            then continue
-        elif echo $line | egrep "$emptyline_re" >/dev/null
+        elif echo "$line" | egrep "$emptyline_re" >/dev/null
            then continue
-        elif echo $line | egrep "$environment_re" >/dev/null
+        elif echo "$line" | egrep "$environment_re" >/dev/null
 	       then environment_found=true
-	    elif eval $environment_found
-	       then if echo $line | egrep "$other_environment_re" >/dev/null
+	    elif eval "$environment_found"
+	       then if echo "$line" | egrep "$other_environment_re" >/dev/null
                    then environment_found=false
 	               else echo -n " -$line"
 	            fi
