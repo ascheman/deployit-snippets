@@ -77,4 +77,6 @@ if [ -n "${DEPLOYIT_CLI_ENV}" -a -n "${DEPLOYIT_CLI_RC}" -a -r "${DEPLOYIT_CLI_R
    then environment_params=`get_environment_from_file ${DEPLOYIT_CLI_RC} ${DEPLOYIT_CLI_ENV}`
 fi
 
+test "${DEPLOYIT_CLI_CD_WORKAROUND:-"false"}" == "true" && cd ${DEPLOYIT_CLI_HOME}
+
 exec $javacmd ${DEPLOYIT_CLI_OPTS} -classpath "${deployit_cli_classpath}" com.xebialabs.deployit.cli.Cli ${environment_params} "$@"
