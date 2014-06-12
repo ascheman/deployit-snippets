@@ -3,6 +3,8 @@
 # Abort if an error occurs
 set -e
 
+test "${DEPLOYIT_CLI_DEBUG}" && set -vx
+
 # Use the DEPLOYIT_CLI_HOME environment variable / or suitable default otherwise
 # This might even be a symbolic link to the correct destination!
 : ${DEPLOYIT_CLI_HOME:="/opt/deployit/cli-current"}
